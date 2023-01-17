@@ -5,10 +5,30 @@ using namespace std;
 
 int board[16][16];
 string _board[16][16];
+string tile[6];
 
 void printBoard(int size)
 {
+    // hidden board printing
+    ///*
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            cout << board[i][j];
+        }
+        cout << endl;
+    }//*/
+
     // board print
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            _board[i][j] = tile[board[i][j]];
+        }
+    }
+
     cout << "  ";
     for (int i = 0; i < size; i++)
     {
@@ -34,7 +54,6 @@ void printBoard(int size)
 
 int main()
 {
-    string tile[6];
     tile[0] += 219;
     tile[0] += 219;
     tile[0] += 219;
@@ -121,50 +140,67 @@ int main()
         }
     }
 
-    for (int i = 0; i < size; i++)
-    {
-        for (int j = 0; j < size; j++)
-        {
-           _board[i][j] = tile[board[i][j]];
-        }
-    }
-
     player = true;
     p1 = 12, p2 = 12;
 
-    // hidden board printing
-    /*
-    for (int i = 0; i < 8; i++)
-    {
-        for (int j = 0; j < 8; j++)
-        {
-            cout << board[i][j];
-        }
-        cout << endl;
-    }*/
-
     printBoard(size);
 
-    char xa, ya, xb, yb;
+    int xa, ya, xb, yb;
+    
 
     while (1)
     {
         cin >> xa;
-        if (xa > '0' && xa < '8')
+        if (xa > 0 && xa <= size)
         {
             cin >> ya >> xb >> yb;
-            if ((ya > '0' && ya < '8') && (xb > '0' && xb < '8') && (yb > '0' && yb < '8') && !(xa == xb && ya == yb))
+            if (((ya > 0 && ya <= size) && (xb > 0 && xb <= size)) && ((yb > 0 && yb <= size) && !(xa == xb && ya == yb)))
             {
+                xa--; 
+                ya--; 
+                xb--; 
+                yb--;
                 if (player)
                 {
-                    if (board[xa][ya] == '4' || board[xa][ya] == '5')
+                    if (board[ya][xa] == 4)
                     {
-                        if(board[xb][yb] == '4' || board[xb][yb] == '5')
+                        if (board[yb][xb] == 1 && (ya == yb + 1 && (xb == xa + 1 || xb == xa - 1)))
+                        {
+                            board[yb][xb] = 4;
+                            board[ya][xa] = 1;
+                            system("cls");
+                            printBoard(size);
+                            player = false;
+                        }
+                        else if ((board[yb][xb] == 2 || board[yb][xb] == 3) && (ya == yb + 2 && (xb == xa + 2 || xb == xa - 2)))
+                        {
+                            board[yb][xb] = 4;
+                            //zbij
+                            board[ya][xa] = 1;
+                            system("cls");
+                            printBoard(size);
+                            player = false;
+                        }
+                    }
+                    else
+                    {
+                        cout << "Wrong input \n" << board[ya][xa] << " " << board[yb][xb];
                     }
                 }
                 else
                 {
-
+                    if ((board[ya][xa] == 2) && (board[yb][xb] == 1 && (ya == yb - 1 && (xb == xa + 1 || xb == xa - 1))))
+                    {
+                        board[yb][xb] = 2;
+                        board[ya][xa] = 1;
+                        system("cls");
+                        printBoard(size);
+                        player = false;
+                    }
+                    else
+                    {
+                        cout << "Wrong input \n" << board[ya][xa] << " " << board[yb][xb];
+                    }
                 }
             }
             else
@@ -172,12 +208,16 @@ int main()
                 cout << "Wrong input \n";
             }
         }
-        else if (xa == 'r')
+        else if (xa == 0)
+        {
+            return 0;
+        }
+        else if (xa == -1)
         {
             system("cls");
             goto restart;
         }
-        else if (xa == 's')
+        else if (xa == -2)
         {
             system("cls");
             goto choosingMapSize;
