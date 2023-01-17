@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 
 using namespace std;
@@ -52,6 +52,15 @@ void printBoard(int size)
     }
 }
 
+//capturedX
+int capturedX(int a, int b)
+{
+    if(a>b)
+        return b+1;
+    else
+        return b-1;
+}
+
 int main()
 {
     tile[0] += 219;
@@ -72,18 +81,18 @@ int main()
     tile[5] += ')';
     bool player;
     int p1, p2;
-    string mapChoice;
+    char mapChoice;
     int size;
-    
+
     //choosing map size
     choosingMapSize:
-    cout << "Choose map size: \n type classic or enlarged \n";
+    cout << "Choose map size: \n type c for classic or e for enlarged \n";
     cin >> mapChoice;
-    if (mapChoice == "classic")
+    if (mapChoice == 'c')
     {
         size = 8;
     }
-    else if (mapChoice == "enlarged")
+    else if (mapChoice == 'e')
     {
         size = 16;
     }
@@ -93,7 +102,7 @@ int main()
         goto choosingMapSize;
     }
     system("cls");
-    
+
 
 
     // board generation
@@ -146,8 +155,10 @@ int main()
     printBoard(size);
 
     int xa, ya, xb, yb;
-    
 
+
+
+    //game////////////////////////////////////////////////////
     while (1)
     {
         cin >> xa;
@@ -156,10 +167,11 @@ int main()
             cin >> ya >> xb >> yb;
             if (((ya > 0 && ya <= size) && (xb > 0 && xb <= size)) && ((yb > 0 && yb <= size) && !(xa == xb && ya == yb)))
             {
-                xa--; 
-                ya--; 
-                xb--; 
+                xa--;
+                ya--;
+                xb--;
                 yb--;
+                // white
                 if (player)
                 {
                     if (board[ya][xa] == 4)
@@ -172,21 +184,27 @@ int main()
                             printBoard(size);
                             player = false;
                         }
-                        else if ((board[yb][xb] == 2 || board[yb][xb] == 3) && (ya == yb + 2 && (xb == xa + 2 || xb == xa - 2)))
+                        else if (((board[ya][xa] == 4 && board[yb][xb] == 1) && (board[ya-1][capturedX(xa, xb)] == 2 || board[ya-1][capturedX(xa, xb)] == 3)) && (ya == yb + 2 && (xb == xa + 2 || xb == xa - 2)))
                         {
                             board[yb][xb] = 4;
-                            //zbij
+                            board[ya-1][capturedX(xa, xb)] = 1;
+                            p2--;
                             board[ya][xa] = 1;
                             system("cls");
                             printBoard(size);
                             player = false;
                         }
+                        else
+                        {
+                            cout << "Wrong input \n" << board[ya-1][capturedX(xa, xb)-1] << " " << capturedX(xa, xb);
+                        }
                     }
                     else
                     {
-                        cout << "Wrong input \n" << board[ya][xa] << " " << board[yb][xb];
+                        cout << "Wrong input \n";
                     }
                 }
+                // black
                 else
                 {
                     if ((board[ya][xa] == 2) && (board[yb][xb] == 1 && (ya == yb - 1 && (xb == xa + 1 || xb == xa - 1))))
@@ -195,11 +213,21 @@ int main()
                         board[ya][xa] = 1;
                         system("cls");
                         printBoard(size);
-                        player = false;
+                        player = true;
                     }
+                    else if (((board[ya][xa] == 2 && board[yb][xb] == 1) && (board[ya+1][capturedX(xa, xb)] == 4 || board[ya+1][capturedX(xa, xb)] == 5)) && (ya == yb - 2 && (xb == xa + 2 || xb == xa - 2)))
+                        {
+                            board[yb][xb] = 2;
+                            board[ya+1][capturedX(xa, xb)] = 1;
+                            p1--;
+                            board[ya][xa] = 1;
+                            system("cls");
+                            printBoard(size);
+                            player = true;
+                        }
                     else
                     {
-                        cout << "Wrong input \n" << board[ya][xa] << " " << board[yb][xb];
+                        cout << "Wrong input \n" << board[ya][xa] << " " << board[yb][xb] << " " << board[ya+1][capturedX(xa, xb)] << " " << capturedX(xa, xb);
                     }
                 }
             }
@@ -226,7 +254,7 @@ int main()
         {
             cout << "Wrong input \n";
         }
-        
+
     }
 }
 
