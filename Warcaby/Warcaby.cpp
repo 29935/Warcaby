@@ -3,24 +3,87 @@
 
 using namespace std;
 
+int board[16][16];
+string _board[16][16];
+
+void printBoard(int size)
+{
+    // board print
+    cout << "  ";
+    for (int i = 0; i < size; i++)
+    {
+        if (i + 1 < 10)
+            cout << " " << i + 1 << " ";
+        else
+            cout << " " << i + 1;
+    }
+    cout << endl;
+    for (int i = 0; i < size; i++)
+    {
+        if (i + 1 < 10)
+            cout << i + 1 << " ";
+        else
+            cout << i + 1;
+        for (int j = 0; j < size; j++)
+        {
+            cout << _board[i][j];
+        }
+        cout << endl;
+    }
+}
+
 int main()
 {
-    int board[8][8];
-    string _board[8][8];
     string tile[6];
     tile[0] += 219;
     tile[0] += 219;
     tile[0] += 219;
-    tile[2] = "   ";
-    tile[3] = "   ";
-    tile[4] = "   ";
-    tile[5] = "   ";
-    tile[6] = "   ";
+    tile[1] = "   ";
+    tile[2] += ' ';
+    tile[2] += 1;
+    tile[2] += ' ';
+    tile[3] += '(';
+    tile[3] += 1;
+    tile[3] += ')';
+    tile[4] += ' ';
+    tile[4] += 2;
+    tile[4] += ' ';
+    tile[5] += '(';
+    tile[5] += 2;
+    tile[5] += ')';
+    bool player;
+    int p1, p2;
+    string mapChoice;
+    int size;
+    
+    //choosing map size
+    choosingMapSize:
+    cout << "Choose map size: \n type classic or enlarged \n";
+    cin >> mapChoice;
+    if (mapChoice == "classic")
+    {
+        size = 8;
+    }
+    else if (mapChoice == "enlarged")
+    {
+        size = 16;
+    }
+    else
+    {
+        cout << "Wrong input \n";
+        goto choosingMapSize;
+    }
+    system("cls");
+    
+
+
+    // board generation
+    restart:
     bool checker;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < size * 3 / 8; i++)
     {
         checker = i % 2;
-        for (int j = 0; j < 8; j++)
+        for (int j = 0; j < size; j++)
         {
             if ((checker + j) % 2)
             {
@@ -30,10 +93,11 @@ int main()
             board[i][j] = 0;
         }
     }
-    for (int i = 3; i < 5; i++)
+
+    for (int i = size * 3 / 8; i < (size * 2 / 8) + (size * 3 / 8); i++)
     {
         checker = i % 2;
-        for (int j = 0; j < 8; j++)
+        for (int j = 0; j < size; j++)
         {
             if ((checker + j) % 2)
             {
@@ -43,10 +107,10 @@ int main()
                 board[i][j] = 0;
         }
     }
-    for (int i = 5; i < 8; i++)
+    for (int i = (size * 2 / 8) + (size * 3 / 8); i < size; i++)
     {
         checker = i % 2;
-        for (int j = 0; j < 8; j++)
+        for (int j = 0; j < size; j++)
         {
             if ((checker + j) % 2)
             {
@@ -57,7 +121,16 @@ int main()
         }
     }
 
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+           _board[i][j] = tile[board[i][j]];
+        }
+    }
 
+    player = true;
+    p1 = 12, p2 = 12;
 
     // hidden board printing
     /*
@@ -69,13 +142,51 @@ int main()
         }
         cout << endl;
     }*/
-    for (int i = 0; i < 8; i++)
+
+    printBoard(size);
+
+    char xa, ya, xb, yb;
+
+    while (1)
     {
-        for (int j = 0; j < 8; j++)
+        cin >> xa;
+        if (xa > '0' && xa < '8')
         {
-            cout << _board[i][j];
+            cin >> ya >> xb >> yb;
+            if ((ya > '0' && ya < '8') && (xb > '0' && xb < '8') && (yb > '0' && yb < '8') && !(xa == xb && ya == yb))
+            {
+                if (player)
+                {
+                    if (board[xa][ya] == '4' || board[xa][ya] == '5')
+                    {
+                        if(board[xb][yb] == '4' || board[xb][yb] == '5')
+                    }
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+                cout << "Wrong input \n";
+            }
         }
-        cout << endl;
+        else if (xa == 'r')
+        {
+            system("cls");
+            goto restart;
+        }
+        else if (xa == 's')
+        {
+            system("cls");
+            goto choosingMapSize;
+        }
+        else
+        {
+            cout << "Wrong input \n";
+        }
+        
     }
 }
 
