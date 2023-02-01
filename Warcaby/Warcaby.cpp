@@ -1,13 +1,35 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <stdlib.h> 
+#include <stdlib.h>
 
 using namespace std;
 
 int board[16][16];
 string _board[16][16];
 string tile[6];
+
+int stringToInt(string s)
+{
+    int m = 1, w = 0, d = 1;
+    for(int i = s.size()-1; i >= 0; i--)
+    {
+        if (s[i] >= '0' && s[i] <= '9')
+        {
+            w += (s[i] - '0')*d;
+        }
+        else if ( i == 0 && s[i] == '-')
+        {
+            w *= -1;
+        }
+        else
+        {
+            return -4;
+        }
+        d *= 10;
+    }
+        return w;
+}
 
 void printBoard(int size)
 {
@@ -86,7 +108,7 @@ int main()
     char mapChoice;
     int size;
     int saveNum;
-    string file_name[3] = {"save1.txt", "save2.txt", "save3.txt"};
+    string file_name[3] = { "save1.txt", "save2.txt", "save3.txt" };
 
 
 
@@ -96,10 +118,10 @@ int main()
 
 choosingMapSize:
     bool loaded = false;
-    
+
     while (1)
     {
-        cout << "Choose map size: type c for classic or e for enlarged \n Load save: type l \n";
+        cout << "Choose map size: type c for classic or e for enlarged \nLoad save: type l \n";
         cin >> mapChoice;
         if (mapChoice == 'c')
         {
@@ -147,7 +169,7 @@ choosingMapSize:
             goto choosingMapSize;
         }
     }
-    
+
     system("cls");
 
 
@@ -205,6 +227,7 @@ choosingMapSize:
 
     printBoard(size);
 
+    string cm1, cm2, cm3, cm4;
     int xa, ya, xb, yb;
 
 
@@ -213,10 +236,18 @@ choosingMapSize:
     while (p1 && p2)
     {
         cout << "Type piece x and y and new x and y \nor type 0 to end, -1 to restart, -2 to back to menu, -3 to save\n";
-        cin >> xa;
+        if(player)
+            cout << "White move\n";
+        else
+            cout << "Black move\n";
+        cin >> cm1;
+        xa = stringToInt(cm1);
         if (xa > 0 && xa <= size)
         {
-            cin >> ya >> xb >> yb;
+            cin >> cm2 >> cm3 >> cm4;
+            ya = stringToInt(cm2);
+            xb = stringToInt(cm3);
+            yb = stringToInt(cm4);
             if (((ya > 0 && ya <= size) && (xb > 0 && xb <= size)) && ((yb > 0 && yb <= size) && !(xa == xb && ya == yb)))
             {
                 xa--;
@@ -231,7 +262,7 @@ choosingMapSize:
                         //man move
                         if (board[yb][xb] == 1 && (ya == yb + 1 && (xb == xa + 1 || xb == xa - 1)))
                         {
-                            if(yb != 0)
+                            if (yb != 0)
                                 board[yb][xb] = 4;
                             else
                                 board[yb][xb] = 5;
@@ -286,7 +317,7 @@ choosingMapSize:
                     }
                     else
                     {
-                        cout << "Wrong input \n" << board[ya][xa] << " " << board[yb][xb] << " " << board[ya + 1][capturedX(xa, xb)] << " " << capturedX(xa, xb);
+                        cout << "Wrong input \n";
                     }
                 }
             }
@@ -347,6 +378,5 @@ choosingMapSize:
         cout << "White wins \n";
 
 }
-
 
 
