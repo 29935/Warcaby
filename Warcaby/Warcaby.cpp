@@ -8,6 +8,7 @@ using namespace std;
 int board[16][16];
 string _board[16][16];
 string tile[6];
+int p1, p2;
 
 int stringToInt(string s)
 {
@@ -76,7 +77,7 @@ void printBoard(int size)
     }
 }
 
-//capturedX
+//captured X
 int capturedX(int a, int b)
 {
     if (a > b)
@@ -85,6 +86,78 @@ int capturedX(int a, int b)
         return b - 1;
 }
 
+// capture Check
+bool captureCheck(bool a, int x, int y)
+{
+    //white
+    if ((board[y][x] == 4 || board[y][x] == 5) && (((board[y+1][x-1] == 2 || board[y+1][x-1] == 3) && board[y+2][x-2] == 1) || ((board[y-1][x-1] == 2 || board[y-1][x-1] == 3) && board[y-2][x-2] == 1)) || (a && (((board[y+1][x+1] == 2 || board[y+1][x+1] == 3) && board[y+2][x+2] == 1) || ((board[y-1][x+1] == 2 || board[y-1][x+1] == 3) && board[y-2][x+2] == 1))))
+    {
+        return true;
+    }
+    //black
+    else if ((board[y][x] == 2 || board[y][x] == 3) && (((board[y+1][x+1] == 4 || board[y+1][x+1] == 5) && board[y+2][x+2] == 1) || ((board[y-1][x+1] == 4 || board[y-1][x+1] == 5) && board[y-2][x+2] == 1)) || (a && (((board[y+1][x-1] == 4 || board[y+1][x-1] == 5) && board[y+2][x-2] == 1) || ((board[y-1][x-1] == 4 || board[y-1][x-1] == 5) && board[y-2][x-2] == 1))))
+    {
+        return true;
+    }
+    return false;
+}
+
+//multi capture
+void multiCapture(int x, int y, int size)
+{
+    string aa, bb;
+    int a, b;
+    system("cls");
+    printBoard(size);
+    while (captureCheck(1, x, y))
+    {
+        cout << "Multi capture available\ntype 0 to skip turn\ntype x and y to move pawn " << x+1 << " " << y+1 << endl;
+        cin >> aa;
+        a = stringToInt(aa);
+        if (a == 0)
+        {
+            break;
+        }
+        cin >> bb;
+        b = stringToInt(bb);
+        a--;
+        b--;
+        //white man
+        if((((board[y][x] == 4 && board[b][a] == 1) && (board[capturedX(y, b)][capturedX(x, a)] == 2 || board[capturedX(y, b)][capturedX(x, a)] == 3)))&(((x + 2 == a)||(x - 2 == a))&&((y + 2 == b)||(y - 2 == b))))
+        {
+            board[b][a] = 4;
+            board[capturedX(y, b)][capturedX(x, a)] = 1;
+            p2--;
+            board[y][x] = 1;
+            x = a;
+            y = b;
+            system("cls");
+            printBoard(size);
+        }
+        //black man
+        else if ((((board[y][x] == 2 && board[b][a] == 1) && (board[capturedX(y, b)][capturedX(x, a)] == 4 || board[capturedX(y, b)][capturedX(x, a)] == 5)))&(((x + 2 == a)||(x - 2 == a))&&((y + 2 == b)||(y - 2 == b))))
+        {
+            board[b][a] = 2;
+            board[capturedX(y, b)][capturedX(x, a)] = 1;
+            p1--;
+            board[y][x] = 1;
+            x = a;
+            y = b;
+            system("cls");
+            printBoard(size);
+        }
+        else
+        {
+            system("cls");
+            cout << "Wrong input\n";
+            printBoard(size);
+        }
+    }
+
+}
+
+
+//main/////////////////////////////////////////////////////////////
 int main()
 {
     tile[0] += 219;
@@ -104,7 +177,6 @@ int main()
     tile[5] += 2;
     tile[5] += ')';
     bool player;
-    int p1, p2;
     char mapChoice;
     int size;
     int saveNum;
@@ -257,35 +329,32 @@ choosingMapSize:
                 // white
                 if (player)
                 {
-                    if (board[ya][xa] == 4)
+                    //man move
+                    if ((board[ya][xa] == 4 && board[yb][xb] == 1) && (ya == yb + 1 && (xb == xa + 1 || xb == xa - 1)))
                     {
-                        //man move
-                        if (board[yb][xb] == 1 && (ya == yb + 1 && (xb == xa + 1 || xb == xa - 1)))
-                        {
-                            if (yb != 0)
-                                board[yb][xb] = 4;
-                            else
-                                board[yb][xb] = 5;
-                            board[ya][xa] = 1;
-                            system("cls");
-                            printBoard(size);
-                            player = false;
-                        }
-                        //man capture
-                        else if (((board[ya][xa] == 4 && board[yb][xb] == 1) && (board[ya - 1][capturedX(xa, xb)] == 2 || board[ya - 1][capturedX(xa, xb)] == 3)) && (ya == yb + 2 && (xb == xa + 2 || xb == xa - 2)))
-                        {
+                        if (yb != 0)
                             board[yb][xb] = 4;
-                            board[ya - 1][capturedX(xa, xb)] = 1;
-                            p2--;
-                            board[ya][xa] = 1;
-                            system("cls");
-                            printBoard(size);
-                            player = false;
-                        }
                         else
+                            board[yb][xb] = 5;
+                        board[ya][xa] = 1;
+                        system("cls");
+                        printBoard(size);
+                        player = false;
+                    }
+                    //man capture
+                    else if (((board[ya][xa] == 4 && board[yb][xb] == 1) && (board[ya - 1][capturedX(xa, xb)] == 2 || board[ya - 1][capturedX(xa, xb)] == 3)) && (ya == yb + 2 && (xb == xa + 2 || xb == xa - 2)))
+                    {
+                        board[yb][xb] = 4;
+                        board[ya - 1][capturedX(xa, xb)] = 1;
+                        p2--;
+                        board[ya][xa] = 1;
+                        if(captureCheck(1, xb, yb))
                         {
-                            cout << "Wrong input \n" << board[ya - 1][capturedX(xa, xb) - 1] << " " << capturedX(xa, xb);
+                            multiCapture(xb, yb, size);
                         }
+                        system("cls");
+                        printBoard(size);
+                        player = false;
                     }
                     else
                     {
@@ -296,7 +365,7 @@ choosingMapSize:
                 else
                 {
                     // man move
-                    if ((board[ya][xa] == 2) && (board[yb][xb] == 1 && (ya == yb - 1 && (xb == xa + 1 || xb == xa - 1))))
+                    if ((board[ya][xa] == 2 && board[yb][xb] == 1) && (ya == yb - 1 && (xb == xa + 1 || xb == xa - 1)))
                     {
                         board[yb][xb] = 2;
                         board[ya][xa] = 1;
@@ -311,6 +380,10 @@ choosingMapSize:
                         board[ya + 1][capturedX(xa, xb)] = 1;
                         p1--;
                         board[ya][xa] = 1;
+                        if(captureCheck(1, xb, yb))
+                        {
+                            multiCapture(xb, yb, size);
+                        }
                         system("cls");
                         printBoard(size);
                         player = true;
