@@ -156,6 +156,158 @@ void multiCapture(int x, int y, int size)
 
 }
 
+//king movement
+bool kingCheck(int size, int x, int y, int xx, int yy)
+{
+    bool checkTab[size][size];
+    for(int i = 0; i < size; i ++)
+    {
+         for(int j = 0; j < size; j ++)
+            {
+                checkTab[i][j] = false;
+            }
+    }
+    int a = x + 1, b = y + 1;
+    while (a < size && b < size)
+    {
+        if (board[b][a] == 1)
+        {
+            checkTab[b][a] = true;
+            a++;
+            b++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    a = x + 1;
+    b = y - 1;
+    while (a < size && b < size)
+    {
+        if (board[b][a] == 1)
+        {
+            checkTab[b][a] = true;
+            a++;
+            b--;
+        }
+        else
+        {
+            break;
+        }
+    }
+    a = x - 1;
+    b = y + 1;
+    while (a < size && b < size)
+    {
+        if (board[b][a] == 1)
+        {
+            checkTab[b][a] = true;
+            a--;
+            b++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    a = x - 1;
+    b = y - 1;
+    while (a < size && b < size)
+    {
+        if (board[b][a] == 1)
+        {
+            checkTab[b][a] = true;
+            a--;
+            b--;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return checkTab[yy][xx];
+}
+
+// king capture
+bool kingCap(int size, int x, int y, int xx, int yy)
+{
+    bool f = false;
+
+    int a = x + 1, b = y + 1;
+    while (a < size && b < size)
+    {
+        if (board[b][a] == 1)
+        {
+            a++;
+            b++;
+        }
+        else
+        {
+            if(((board[y][x] == 5 && (board[b][a] == 3 || board[b][a] == 2))||(board[y][x] == 3 && (board[b][a] == 5 || board[b][a] == 4)))&& (board[yy][xx] == board[b+1][a+1]))
+            {
+                f = true;
+            }
+            break;
+        }
+    }
+    a = x + 1;
+    b = y - 1;
+    while ((a < size && b < size)&!f)
+    {
+        if (board[b][a] == 1)
+        {
+            a++;
+            b--;
+        }
+        else
+        {
+            if(((board[y][x] == 5 && (board[b][a] == 3 || board[b][a] == 2))||(board[y][x] == 3 && (board[b][a] == 5 || board[b][a] == 4)))&& (board[yy][xx] == board[b-1][a+1]))
+            {
+                f = true;
+            }
+            break;
+        }
+    }
+    a = x - 1;
+    b = y + 1;
+    while ((a < size && b < size)&!f)
+    {
+        if (board[b][a] == 1)
+        {
+            a--;
+            b++;
+        }
+        else
+        {
+            if(((board[y][x] == 5 && (board[b][a] == 3 || board[b][a] == 2))||(board[y][x] == 3 && (board[b][a] == 5 || board[b][a] == 4)))&& (board[yy][xx] == board[b+1][a-1]))
+            {
+                f = true;
+            }
+            break;
+        }
+    }
+    a = x - 1;
+    b = y - 1;
+    while ((a < size && b < size)&!f)
+    {
+        if (board[b][a] == 1)
+        {
+            a--;
+            b--;
+        }
+        else
+        {
+            if(((board[y][x] == 5 && (board[b][a] == 3 || board[b][a] == 2))||(board[y][x] == 3 && (board[b][a] == 5 || board[b][a] == 4)))&& (board[yy][xx] == board[b-1][a-1]))
+            {
+                f = true;
+            }
+            break;
+        }
+    }
+    return f;
+}
+
 
 //main/////////////////////////////////////////////////////////////
 int main()
@@ -356,6 +508,30 @@ choosingMapSize:
                         printBoard(size);
                         player = false;
                     }
+                    //king move
+                    else if (board[ya][xa] == 5 && kingCheck(size,xa,ya,xb,yb))
+                    {
+                        board[yb][xb] = 5;
+                        board[ya][xa] = 1;
+                        system("cls");
+                        printBoard(size);
+                        player = false;
+                    }
+                    //king capture
+                    else if ((board[ya][xa] == 5 && board[yb][xb] == 1)&&kingCap(size,xa,ya,xb,yb))
+                    {
+                        board[yb][xb] = 5;
+                        board[ya][xa] = 1;
+                        p2--;
+                        board[capturedX(ya, yb)][capturedX(xa, xb)] = 1;
+                        if(captureCheck(1, xb, yb))
+                        {
+                            multiCapture(xb, yb, size);
+                        }
+                        system("cls");
+                        printBoard(size);
+                        player = false;
+                    }
                     else
                     {
                         cout << "Wrong input \n";
@@ -367,7 +543,10 @@ choosingMapSize:
                     // man move
                     if ((board[ya][xa] == 2 && board[yb][xb] == 1) && (ya == yb - 1 && (xb == xa + 1 || xb == xa - 1)))
                     {
-                        board[yb][xb] = 2;
+                        if (yb != size-1)
+                            board[yb][xb] = 2;
+                        else
+                            board[yb][xb] = 3;
                         board[ya][xa] = 1;
                         system("cls");
                         printBoard(size);
@@ -387,6 +566,30 @@ choosingMapSize:
                         system("cls");
                         printBoard(size);
                         player = true;
+                    }
+                    //king move
+                    else if (board[ya][xa] == 3 && kingCheck(size,xa,ya,xb,yb))
+                    {
+                        board[yb][xb] = 3;
+                        board[ya][xa] = 1;
+                        system("cls");
+                        printBoard(size);
+                        player = false;
+                    }
+                    //king capture
+                    else if ((board[ya][xa] == 3 && board[yb][xb] == 1)&&kingCap(size,xa,ya,xb,yb))
+                    {
+                        board[yb][xb] = 3;
+                        board[ya][xa] = 1;
+                        p2--;
+                        board[capturedX(ya, yb)][capturedX(xa, xb)] = 1;
+                        if(captureCheck(1, xb, yb))
+                        {
+                            multiCapture(xb, yb, size);
+                        }
+                        system("cls");
+                        printBoard(size);
+                        player = false;
                     }
                     else
                     {
