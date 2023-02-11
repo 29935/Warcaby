@@ -518,7 +518,10 @@ choosingMapSize:
                     //man capture
                     else if (((board[ya][xa] == 4 && board[yb][xb] == 1) && (board[ya - 1][capturedX(xa, xb)] == 2 || board[ya - 1][capturedX(xa, xb)] == 3)) && (ya == yb + 2 && (xb == xa + 2 || xb == xa - 2)))
                     {
-                        board[yb][xb] = 4;
+                        if (yb != 0)
+                            board[yb][xb] = 4;
+                        else
+                            board[yb][xb] = 5;
                         board[ya - 1][capturedX(xa, xb)] = 1;
                         p2--;
                         board[ya][xa] = 1;
@@ -577,7 +580,10 @@ choosingMapSize:
                     // man capture
                     else if (((board[ya][xa] == 2 && board[yb][xb] == 1) && (board[ya + 1][capturedX(xa, xb)] == 4 || board[ya + 1][capturedX(xa, xb)] == 5)) && (ya == yb - 2 && (xb == xa + 2 || xb == xa - 2)))
                     {
-                        board[yb][xb] = 2;
+                        if (yb != size-1)
+                            board[yb][xb] = 2;
+                        else
+                            board[yb][xb] = 3;
                         board[ya + 1][capturedX(xa, xb)] = 1;
                         p1--;
                         board[ya][xa] = 1;
