@@ -401,6 +401,7 @@ choosingMapSize:
                     }
                     loaded = true;
                     break;
+plik.close();
                 }
                 else
                     cout << "No save \n";
@@ -664,6 +665,7 @@ choosingMapSize:
                     }
                     plik << "\n";
                 }
+plik.close();
             }
             else
                 cout << "Wrong input \n";
